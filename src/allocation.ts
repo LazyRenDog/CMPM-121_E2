@@ -17,6 +17,12 @@ type ShiftResults = {
   balance: number;
 };
 
+type ReportRow = {
+  label: string;
+  value: number;
+  color: string;
+};
+
 function calculateShiftResults(assignedToSupplies: number): ShiftResults {
   const production = assignedToSupplies * 3;
   const consumption = totalResidents;
@@ -51,13 +57,20 @@ function drawShiftChart(results: ShiftResults) {
     18,
     76,
   );
-  ctx.fillText(`Production: ${results.production}`, 18, 102);
-  ctx.fillStyle = "#27766b";
-  ctx.fillRect(18, 110, results.production * 14, 20);
-  ctx.fillStyle = "#233e43";
-  ctx.fillText(`Consumption: ${results.consumption}`, 18, 154);
-  ctx.fillStyle = "#a44d23";
-  ctx.fillRect(18, 162, results.consumption * 14, 20);
+
+  const rows: ReportRow[] = [
+    { label: "Production", value: results.production, color: "#27766b" },
+    { label: "Consumption", value: results.consumption, color: "#a44d23" },
+  ];
+
+  for (let i = 0; i < rows.length; i++) {
+    const row = rows[i];
+    const labelY = 102 + i * 52;
+    ctx.fillStyle = "#233e43";
+    ctx.fillText(`${row.label}: ${row.value}`, 18, labelY);
+    ctx.fillStyle = row.color;
+    ctx.fillRect(18, labelY + 8, row.value * 14, 20);
+  }
 }
 
 function updateShiftReadout(results: ShiftResults) {

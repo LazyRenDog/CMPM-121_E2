@@ -43,10 +43,10 @@ function drawMeter(snapshot: ShieldSnapshot) {
     `Shield charge: ${snapshot.charge} / ${snapshot.capacity}`;
 }
 
-function updateStats(snapshot: ShieldSnapshot) {
+function InspectorChange() {
   panelUpdates++;
   diagnostic.textContent = `Inspector deliveries: ${panelUpdates}`;
-  renderStats(snapshot);
+  renderStats(getShieldSnapshot());
 }
 
 function renderStats(snapshot: ShieldSnapshot) {
@@ -63,9 +63,7 @@ function setCount(next: number) {
   const bounded = Math.max(0, Math.min(10, next));
   if (bounded === count) return;
   count = bounded;
-  const snapshot = getShieldSnapshot();
-  drawMeter(snapshot);
-  if (panel) updateStats(getShieldSnapshot());
+  shieldEvents.dispatchEvent(new Event("change"));
 }
 
 document.querySelector<HTMLButtonElement>("#counter-less")!.onclick = () => {
@@ -82,9 +80,11 @@ document.querySelector<HTMLButtonElement>("#counter-open")!.onclick = () => {
   panel = document.createElement("p");
   host.append(panel);
   renderStats(getShieldSnapshot());
+  shieldEvents.addEventListener("change", InspectorChange);
 };
 document.querySelector<HTMLButtonElement>("#counter-close")!.onclick = () => {
   if (!panel) return;
+  shieldEvents.removeEventListener("change", InspectorChange);
   panel.remove();
   panel = null;
 };

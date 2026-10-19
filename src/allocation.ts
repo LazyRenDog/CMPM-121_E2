@@ -39,7 +39,7 @@ function calculateShiftResults(assignedToSupplies: number): ShiftResults {
 function drawResidentRoster(results: ShiftResults) {
   for (let resident = 0; resident < results.totalResidents; resident++) {
     const onSupplyShift = resident < results.supply_crew;
-    ctx.fillStyle = onSupplyShift ? "#040505" : "#c9d2c9";
+    ctx.fillStyle = onSupplyShift ? "#27766b" : "#c9d2c9";
     ctx.fillRect(18 + resident * 45, 16, 36, 36);
     ctx.fillStyle = onSupplyShift ? "#ffffff" : "#233e43";
     ctx.font = "16px system-ui";

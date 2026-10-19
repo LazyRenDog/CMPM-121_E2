@@ -9,10 +9,31 @@ const readout = document.querySelector<HTMLParagraphElement>(
 const totalResidents = 6;
 let supply_crew = 2;
 
-function drawResidentRoster(assignedToSupplies: number) {
-  for (let resident = 0; resident < totalResidents; resident++) {
-    const onSupplyShift = resident < assignedToSupplies;
-    ctx.fillStyle = onSupplyShift ? "#27766b" : "#c9d2c9";
+type ShiftResults = {
+  supply_crew: number;
+  totalResidents: number;
+  production: number;
+  consumption: number;
+  balance: number;
+};
+
+function calculateShiftResults(assignedToSupplies: number): ShiftResults {
+  const production = assignedToSupplies * 3;
+  const consumption = totalResidents;
+  const balance = production - consumption;
+  return {
+    supply_crew: assignedToSupplies,
+    totalResidents,
+    production,
+    consumption,
+    balance,
+  };
+}
+
+function drawResidentRoster(results: ShiftResults) {
+  for (let resident = 0; resident < results.totalResidents; resident++) {
+    const onSupplyShift = resident < results.supply_crew;
+    ctx.fillStyle = onSupplyShift ? "#040505" : "#c9d2c9";
     ctx.fillRect(18 + resident * 45, 16, 36, 36);
     ctx.fillStyle = onSupplyShift ? "#ffffff" : "#233e43";
     ctx.font = "16px system-ui";
@@ -20,43 +41,36 @@ function drawResidentRoster(assignedToSupplies: number) {
   }
 }
 
-function drawShiftChart(
-  assignedToSupplies: number,
-  production: number,
-  consuption: number,
-) {
+function drawShiftChart(results: ShiftResults) {
   ctx.clearRect(0, 0, canvas.width, canvas.height);
-  drawResidentRoster(assignedToSupplies);
+  drawResidentRoster(results);
   ctx.fillStyle = "#233e43";
   ctx.font = "14px system-ui";
-  ctx.fillText(`Producers: ${assignedToSupplies} / ${totalResidents}`, 18, 76);
-  ctx.fillText(`Production: ${production}`, 18, 102);
+  ctx.fillText(
+    `Producers: ${results.supply_crew} / ${results.totalResidents}`,
+    18,
+    76,
+  );
+  ctx.fillText(`Production: ${results.production}`, 18, 102);
   ctx.fillStyle = "#27766b";
-  ctx.fillRect(18, 110, production * 14, 20);
+  ctx.fillRect(18, 110, results.production * 14, 20);
   ctx.fillStyle = "#233e43";
-  ctx.fillText(`Consumption: ${consuption}`, 18, 154);
+  ctx.fillText(`Consumption: ${results.consumption}`, 18, 154);
   ctx.fillStyle = "#a44d23";
-  ctx.fillRect(18, 162, consuption * 14, 20);
+  ctx.fillRect(18, 162, results.consumption * 14, 20);
 }
 
-function updateShiftReadout(
-  assignedToSupplies: number,
-  production: number,
-  consumption: number,
-  balance: number,
-) {
+function updateShiftReadout(results: ShiftResults) {
   readout.textContent =
-    `Assigned: ${assignedToSupplies}/6 · Production: ${production} · Consumption: ${consumption} · Balance: ${
-      balance > 0 ? "+" : ""
-    }${balance}`;
+    `Assigned: ${results.supply_crew}/6 · Production: ${results.production} · Consumption: ${results.consumption} · Balance: ${
+      results.balance > 0 ? "+" : ""
+    }${results.balance}`;
 }
 
 function updateShiftReport() {
-  const production = supply_crew * 3;
-  const consumption = totalResidents;
-  const balance = production - consumption;
-  drawShiftChart(supply_crew, production, consumption);
-  updateShiftReadout(supply_crew, production, consumption, balance);
+  const results = calculateShiftResults(supply_crew);
+  drawShiftChart(results);
+  updateShiftReadout(results);
 }
 
 document.querySelector<HTMLButtonElement>("#allocation-less")!.onclick = () => {

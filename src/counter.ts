@@ -33,7 +33,7 @@ function getShieldSnapshot(): ShieldSnapshot {
 function drawMeter(snapshot: ShieldSnapshot) {
   ctx.clearRect(0, 0, canvas.width, canvas.height);
   for (let i = 0; i < snapshot.capacity; i++) {
-    ctx.fillStyle = i < snapshot.capacity ? "#27766b" : "#c9d2c9";
+    ctx.fillStyle = i < snapshot.charge ? "#27766b" : "#c9d2c9";
     ctx.fillRect(12 + i * 28, 24, 24, 48);
   }
   ctx.fillStyle = "#233e43";
@@ -60,7 +60,7 @@ shieldEvents.addEventListener("change", () => {
 });
 
 function setCount(next: number) {
-  const bounded = Math.max(0, Math.min(10, next));
+  const bounded = Math.max(0, Math.min(capacity, next));
   if (bounded === count) return;
   count = bounded;
   shieldEvents.dispatchEvent(new Event("change"));
